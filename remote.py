@@ -1,4 +1,5 @@
-import twitter, logging, optparse, sys, os, simplejson, time
+import twitter, logging, optparse, sys, os, simplejson, time, datetime
+import rfc822
 
 
 def apply_rules(sender, text, rules):
@@ -16,10 +17,10 @@ def apply_rules(sender, text, rules):
 
 def remote(user, pwd, rules, last_checked=None):
     api = twitter.Api(username=user, password=pwd)
-    checked = int(str(time.time()).split('.')[0])
+    checked = last_checked
     for dm in api.GetDirectMessages(last_checked):
         apply_rules(dm.sender_screen_name, dm.text, rules)
-        checked = int(str(dm.GetCreatedAtInSeconds()).split('.')[0])
+        checked = dm.GetCreatedAt()
     return checked
 
 
@@ -36,11 +37,9 @@ def main():
     time = None
     try:
         fin = open(timestamp_path,'r')
-        time = int(fin.read())
+        time = fin.read()
         fin.close()
     except IOError:
-        pass
-    except ValueError:
         pass
 
     # load rules
