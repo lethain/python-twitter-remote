@@ -11,11 +11,10 @@ def apply_rules(sender, text, rules):
     
     for rule in rules:
         logging.debug(u" (%s) %s => %s" % (sender, text, rule['rewrite']))
-        os.command(rule['rewrite'])
+        os.system(rule['rewrite'])
 
 
 def remote(user, pwd, rules, last_checked=None):
-
     api = twitter.Api(username=user, password=pwd)
     checked = int(str(time.time()).split('.')[0])
     for dm in api.GetDirectMessages(last_checked):
@@ -46,8 +45,6 @@ def main():
 
     # load rules
     rules_path = os.path.join(dir, 'rules.json')
-    logging.debug(rules_path)
-
     rules = []
     try:
         fin = open(rules_path,'r')
@@ -56,7 +53,6 @@ def main():
         fin.close()
     except IOError:
         pass
-
         
     checked_at = remote(user, pwd, rules, time)
     fout = open(timestamp_path, 'w')
